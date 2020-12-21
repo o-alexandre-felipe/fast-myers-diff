@@ -88,7 +88,7 @@ describe('handcrafted examples', () => {
     // interpret the results
     expect([...diff('a', 'b')]).eqls([[0,1,0,1]]);
   })
-  it('random tests', () => {
+  it('should produce the Hamming distance for non contiguous replacements', () => {
     const x = new Array(10000).fill('a');
     const y = x.slice();
     let j = 0;

@@ -30,13 +30,6 @@ function insertions(insertion, into){
   return ans;
 }
 
-suite.addFunction('myers-diff-2.0.1', (x, y, lcs) => {
-  let n = x.length + y.length
-  for(const t of myersDiff.diff(x, y, {compare: 'chars'})){
-    n -= t.lhs.del + t.rhs.add;
-  }
-  if(typeof lcs === 'number' && n !== 2*lcs) throw 'Wrong result';
-})
 
 suite.addFunction('fast-myers-diff', (x, y) => {
   let n = x.length + y.length;
@@ -45,13 +38,24 @@ suite.addFunction('fast-myers-diff', (x, y) => {
   }
   if(typeof lcs === 'number' && n !== 2*lcs) throw 'Wrong result';
 })
-suite.addFunction('fast-diff-1.2.0', (x, y) => {
-  let n = 0;
-  for(const [side, ] of fastDiff(x, y)){
-    n += side;
-  }
-  if(typeof lcs === 'number' && n !== lcs) throw 'Wrong result';
-})
+
+// suite.addFunction('myers-diff-2.0.2', (x, y, lcs) => {
+//   let n = x.length + y.length
+//   for(const t of myersDiff.diff(x, y, {compare: 'chars'})){
+//     n -= t.lhs.del + t.rhs.add;
+//   }
+//   if(typeof lcs === 'number' && n !== 2*lcs) throw 'Wrong result';
+// })
+//
+// suite.addFunction('fast-diff-1.2.0', (x, y) => {
+//   let n = 0;
+//   for(const [side, ] of fastDiff(x, y)){
+//     n += side;
+//   }
+//   if(typeof lcs === 'number' && n !== lcs) throw 'Wrong result';
+// })
+
+
 suite.addFunction('fast-myers-diff-2.0.0', (x, y) => {
   let n = x.length + y.length;
   if(n >= 256){
@@ -69,18 +73,18 @@ for(const [n, c1, c2] of [
   [100, 10, 10],
   [100, 20, 0],
   [100, 0, 20],
-  [10, 1000, 1000],
-  [10000, 100, 100],
-  [10000, 200, 0],
-  [10000, 0, 200],
-  [10000, 10, 10],
-  [10000, 20, 0],
-  [10000, 0, 20]
+  // [10, 1000, 1000],
+  // [10000, 100, 100],
+  // [10000, 200, 0],
+  // [10000, 0, 200],
+  // [10000, 10, 10],
+  // [10000, 20, 0],
+  // [10000, 0, 20]
 
 ]){
-  const lcs = repeat('a', n);
-  const x = insertions(repeat('d', c1), lcs);
-  const y = insertions(repeat('i', c2), lcs);
+  const lcs = insertions(repeat('0', ~~((n+1)/2)), repeat('1', ~~(n/2)));
+  const x = insertions(repeat('-', c1), lcs);
+  const y = insertions(repeat('+', c2), lcs);
   suite.addInput(`n=${n}, +${c1}, delete=${c2}`, [x, y, n]);
 }
 
@@ -96,3 +100,24 @@ suite.on("complete",  () => {
 console.log("Is it really fast?");
 console.log(new Array(30).join("-"));
 suite.run();
+
+let ans = 0;
+let stack = []
+let pos = 0;
+let [v, k, b] = [0, 10, 0];
+for(;;){
+  if(k === 0){
+    ans += v;
+    [v, k, b] = stack[--pos];
+  }else if(b === 0){
+    stack[pos++] = [v, k, 1];
+    [v, k, b] = [2*v, k-1, 0];
+  }else if(b === 1){
+    stack[pos++] = [v, k, 2];
+    [v, k, b] = [2*v+1, k-1, 1];
+  }else if(pos > 0){
+    [v, k, b] = stack[--pos];
+  }else{
+    break;
+  }
+}

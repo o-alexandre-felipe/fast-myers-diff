@@ -26,7 +26,7 @@ export function getStringPrefix(xs: string, ys: string, i: number, j: number, co
   // for very long strings avoid compare the complete substring
   // at the first iteration
   while(middle < count){
-    if(xs.substr(i + start, middle - start) === ys.substr(j + start, middle - start)){
+    if(xs.substring(i + start, i + middle) === ys.substring(j + start, i + middle)){
       [start, middle] = [middle, 3*middle - start];
     }else{
       end = middle;
@@ -36,7 +36,7 @@ export function getStringPrefix(xs: string, ys: string, i: number, j: number, co
   // proper binary search
   while(start < end - 1){
     middle = Math.floor((start + end) / 2);
-    if(xs.substr(i + start, middle - start) === ys.substr(j + start, middle - start)){
+    if(xs.substring(i + start, i + middle) === ys.substring(j + start, i + middle)){
       start = middle;
     }else{
       end = middle;
